@@ -1,8 +1,10 @@
 --[[
             Torch translation of the keras example found here (written by Eder Santana).
             https://gist.github.com/EderSantana/c7222daa328f0e885093#file-qlearn-py-L164
+
             Example of Re-inforcement learning using the Q function described in this paper from deepmind.
             https://www.cs.toronto.edu/~vmnih/docs/dqn.pdf
+
             The agent plays a game of catch. Fruits drop from the sky and the agent can choose the actions
             left/stay/right to catch the fruit before it reaches the ground.
 ]] --
@@ -15,7 +17,7 @@ cmd:text('Training options')
 cmd:option('-epsilon', 1, 'The probability of choosing a random action (in training). This decays as iterations increase. (0 to 1)')
 cmd:option('-epsilonMinimumValue', 0.001, 'The minimum value we want epsilon to reach in training. (0 to 1)')
 cmd:option('-nbActions', 9, 'The number of actions. Since we only have left/stay/right that means 3 actions.')
-cmd:option('-epoch', 100000, 'The number of games we want the system to run for.')
+cmd:option('-epoch', 20000, 'The number of games we want the system to run for.')
 cmd:option('-hiddenSize', 50, 'Number of neurons in the hidden layers.')
 cmd:option('-maxMemory', 10000, 'How large should the memory be (where it stores its past experiences).')
 cmd:option('-batchSize', 50, 'The mini-batch size for training. Samples are randomly taken from memory till mini-batch size.')
@@ -209,7 +211,8 @@ for i = 1, epoch do
     currentState = canvas:clone()
     nextState = canvas:clone()
     while (gameOver ~= true) do
-        local reRandom = false        
+        local reRandom = false
+        currentState = nextState:clone()
         -- User First
         while ( true ) do
             action = math.random(1, nbActions)
@@ -245,23 +248,16 @@ for i = 1, epoch do
                 print('[bot] random: ' .. action)
             else
                 q = model:forward(currentState:view(-1))
-                 _, index = torch.max(q, 1)
-                action = index[1]
-                print('[bot]qval: ' .. action)
-            end
-            coordY = coord(action)
-            if ( isMarkable(currentState, coordY) )  then
-            else 
-                while ( true ) do
-                    action = math.random(1, nbActions)
-                    coordY = coord(action)    
+                 _, index = torch.sort(q, 1)
+                for j = 1, 9 do
+                    action = index[-j]
+                    coordY = coord(action)
                     if ( isMarkable(currentState, coordY) )  then
                         break
-                    end                     
+                    end            
                 end
-                reRandom = true
-                print('[bot] random again: ' .. action)
-            end            
+                print('[bot]qval: ' .. action)
+            end
             -- Update Environment
             nextState = currentState:clone()
             nextState[coordY[1]][coordY[2]] = 1
@@ -318,5 +314,5 @@ for i = 1, epoch do
     print(string.format("Epoch %d : [%s] [Win Rate = %.2f Draw Rate = %.2f] err = %f : Win count %d : Draw Count %d", i, gameResult, winCount / i * 100, drawCount / i * 100, err, winCount, drawCount))
     print(currentState)
 end
---torch.save(opt.savePath, model)
---print("Model saved to " .. opt.savePath)
+torch.save(opt.savePath, model)
+print("Model saved to " .. opt.savePath)
