@@ -37,14 +37,14 @@ function TicTacToeEnvironment(gridSize)
       local coord = util.coord(action)
       state[coord[1]][coord[2]] = stone
       
-      local reward = -1
+      local reward = 0
       local gameOver = false
       winningCond = util.checkWinState(state, stone)
       if ( winningCond == true ) then
         reward = 1
         gameOver = true
       elseif ( util.isAllMarked(state) ) then
-        reward = 0.85 
+        reward = 0.5
         gameOver = true        
       end
       

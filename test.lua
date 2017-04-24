@@ -11,7 +11,7 @@ cmd:text('Training options')
 cmd:option('-epsilon', 1, 'The probability of choosing a random action (in training). This decays as iterations increase. (0 to 1)')
 cmd:option('-epsilonMinimumValue', 0.001, 'The minimum value we want epsilon to reach in training. (0 to 1)')
 cmd:option('-numActions', 9, 'The number of actions.')
-cmd:option('-epoch', 200000, 'The number of games we want the system to run for.')
+cmd:option('-epoch', 1, 'The number of games we want the system to run for.')
 cmd:option('-hiddenSize', 50, 'Number of neurons in the hidden layers.')
 cmd:option('-maxMemory', 10000, 'How large should the memory be (where it stores its past experiences).')
 cmd:option('-batchSize', 50, 'The mini-batch size for training. Samples are randomly taken from memory till mini-batch size.')
@@ -94,8 +94,8 @@ local criterion = nn.ClassNLLCriterion()
 
 
 
-local memoryO = TicTacToeMemory(maxMemory, discount)
-local memoryX = TicTacToeMemory(maxMemory, discount)
+memoryO = TicTacToeMemory(maxMemory, discount)
+memoryX = TicTacToeMemory(maxMemory, discount)
 local env = TicTacToeEnvironment(gridSize)
 
 local agentO = TicTacToeQLearningAgent(numActions, modelO, -1)
@@ -125,7 +125,7 @@ for i = 1, epoch do
     action = agentO.chooseAction(currState, epsilon)
     print('[agentO] : ' .. action)
     
-    -- Update Enviroiment    
+    -- Update Enviroiment
     nextState, reward, gameOver = env.act(action, agentO.stone())
     nextState = nextState:clone()
     if ( nextState ~= currState ) then
@@ -136,11 +136,11 @@ for i = 1, epoch do
           nextState = nextState:view(-1),
           gameOver = gameOver
       }
-    end      
+    end       
     
     -- Game over by player O
     if ( gameOver == true and experienceO ~= nil) then
-      memoryO.remember(experienceO)
+      memoryO.remember(experienceO)                  
       if ( experienceO.reward == 1 ) then
         winOCount = winOCount + 1
         experienceX.reward = -1
@@ -161,7 +161,6 @@ for i = 1, epoch do
       if ( experienceX ~= nil ) then
         memoryX.remember(experienceX)
       end
-      
       -- Later 
       currState = env.observe():clone()
       
@@ -171,7 +170,6 @@ for i = 1, epoch do
       -- Update Enviroiment
       nextState, reward, gameOver = env.act(action, agentX.stone())
       nextState = nextState:clone()
-
       if ( nextState ~= currState ) then
         experienceX = {
             inputState = currState:view(-1),
@@ -184,7 +182,7 @@ for i = 1, epoch do
     
       -- Game over by player X
       if ( gameOver == true and experienceX ~= nil) then
-        memoryX.remember(experienceX)
+        memoryX.remember(experienceX)        
         if ( experienceX.reward == 1 ) then
           winXCount = winXCount + 1
           experienceO.reward = -1
@@ -202,7 +200,12 @@ for i = 1, epoch do
         end 
         experienceX = nil
       elseif ( gameOver ~= true and experienceX ~= nil ) then
-        memoryO.remember(experienceO)          
+        print("O-I")
+        print(experienceO.inputState:view(3,3))
+        print("O-N")
+        print(experienceO.nextState:view(3,3))
+        memoryO.remember(experienceO)
+        experienceO = nil
       end
     end
     
@@ -234,7 +237,7 @@ for i = 1, epoch do
         epsilon = epsilon * 0.999
     end
   end
-  print(string.format("Epoch %d: [%s] [WinO Rate = %.2f WinX Rate = %.2f Draw Rate = %.2f] err = %.5f : err = %.5f : WinO count %d : WinX count %d : Draw Count %d", i, gameResult, winOCount / i * 100, winXCount / i * 100, drawCount / i * 100, errO, errX, winOCount, winXCount, drawCount))
+  print(string.format("Epoch %d: [WinO Rate = %.2f WinX Rate = %.2f Draw Rate = %.2f] err = %.5f : err = %.5f : WinO count %d : WinX count %d : Draw Count %d", i, winOCount / i * 100, winXCount / i * 100, drawCount / i * 100, errO, errX, winOCount, winXCount, drawCount))
   print(nextState)
   
   if ( i > 0 and i % 3000 == 0 ) then
