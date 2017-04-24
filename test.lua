@@ -8,13 +8,13 @@ require 'TicTacToeUtil'
 
 local cmd = torch.CmdLine()
 cmd:text('Training options')
-cmd:option('-epsilon', 1, 'The probability of choosing a random action (in training). This decays as iterations increase. (0 to 1)')
+cmd:option('-epsilon', 0.9, 'The probability of choosing a random action (in training). This decays as iterations increase. (0 to 1)')
 cmd:option('-epsilonMinimumValue', 0.001, 'The minimum value we want epsilon to reach in training. (0 to 1)')
 cmd:option('-numActions', 9, 'The number of actions.')
-cmd:option('-epoch', 1, 'The number of games we want the system to run for.')
+cmd:option('-epoch', 100, 'The number of games we want the system to run for.')
 cmd:option('-hiddenSize', 50, 'Number of neurons in the hidden layers.')
-cmd:option('-maxMemory', 10000, 'How large should the memory be (where it stores its past experiences).')
-cmd:option('-batchSize', 50, 'The mini-batch size for training. Samples are randomly taken from memory till mini-batch size.')
+cmd:option('-maxMemory', 362880, 'How large should the memory be (where it stores its past experiences).')
+cmd:option('-batchSize', 100, 'The mini-batch size for training. Samples are randomly taken from memory till mini-batch size.')
 cmd:option('-gridSize', 3, 'The size of the grid that the agent is going to play the game on.')
 cmd:option('-discount', 0.9, 'the discount is used to force the network to choose states that lead to the reward quicker (0 to 1)')
 cmd:option('-savePrefix', 'tictactoc-', 'Save path for model')
@@ -125,7 +125,7 @@ for i = 1, epoch do
     action = agentO.chooseAction(currState, epsilon)
     print('[agentO] : ' .. action)
     
-    -- Update Enviroiment
+    -- Update Enviroiment    
     nextState, reward, gameOver = env.act(action, agentO.stone())
     nextState = nextState:clone()
     if ( nextState ~= currState ) then
@@ -136,11 +136,11 @@ for i = 1, epoch do
           nextState = nextState:view(-1),
           gameOver = gameOver
       }
-    end       
+    end      
     
     -- Game over by player O
     if ( gameOver == true and experienceO ~= nil) then
-      memoryO.remember(experienceO)                  
+      memoryO.remember(experienceO)
       if ( experienceO.reward == 1 ) then
         winOCount = winOCount + 1
         experienceX.reward = -1
@@ -151,8 +151,11 @@ for i = 1, epoch do
         experienceX = nil
       else
         drawCount = drawCount + 1
+        experienceX.reward = 0.5
+        experienceX.gameOver = true
         gameResult = 'Draw'
         
+        print("dddddddd")
         memoryX.remember(experienceX)
         experienceX = nil
       end 
@@ -161,6 +164,7 @@ for i = 1, epoch do
       if ( experienceX ~= nil ) then
         memoryX.remember(experienceX)
       end
+      
       -- Later 
       currState = env.observe():clone()
       
@@ -170,6 +174,7 @@ for i = 1, epoch do
       -- Update Enviroiment
       nextState, reward, gameOver = env.act(action, agentX.stone())
       nextState = nextState:clone()
+
       if ( nextState ~= currState ) then
         experienceX = {
             inputState = currState:view(-1),
@@ -182,7 +187,7 @@ for i = 1, epoch do
     
       -- Game over by player X
       if ( gameOver == true and experienceX ~= nil) then
-        memoryX.remember(experienceX)        
+        memoryX.remember(experienceX)
         if ( experienceX.reward == 1 ) then
           winXCount = winXCount + 1
           experienceO.reward = -1
@@ -200,12 +205,7 @@ for i = 1, epoch do
         end 
         experienceX = nil
       elseif ( gameOver ~= true and experienceX ~= nil ) then
-        print("O-I")
-        print(experienceO.inputState:view(3,3))
-        print("O-N")
-        print(experienceO.nextState:view(3,3))
-        memoryO.remember(experienceO)
-        experienceO = nil
+        memoryO.remember(experienceO)          
       end
     end
     
@@ -234,10 +234,10 @@ for i = 1, epoch do
 
     -- Decay the epsilon by multiplying by 0.999, not allowing it to go below a certain threshold.
     if (epsilon > epsilonMinimumValue) then
-        epsilon = epsilon * 0.999
+        --epsilon = epsilon * 0.9999
     end
   end
-  print(string.format("Epoch %d: [WinO Rate = %.2f WinX Rate = %.2f Draw Rate = %.2f] err = %.5f : err = %.5f : WinO count %d : WinX count %d : Draw Count %d", i, winOCount / i * 100, winXCount / i * 100, drawCount / i * 100, errO, errX, winOCount, winXCount, drawCount))
+  print(string.format("Epoch %d: [%s] [WinO Rate = %.2f WinX Rate = %.2f Draw Rate = %.2f] err = %.5f : err = %.5f : WinO count %d : WinX count %d : Draw Count %d", i, gameResult, winOCount / i * 100, winXCount / i * 100, drawCount / i * 100, errO, errX, winOCount, winXCount, drawCount))
   print(nextState)
   
   if ( i > 0 and i % 3000 == 0 ) then

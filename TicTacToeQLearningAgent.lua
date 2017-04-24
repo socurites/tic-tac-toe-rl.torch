@@ -14,6 +14,7 @@ function TicTacToeQLearningAgent(numActions, model, stone)
       while ( true ) do
         action = math.random(1, numActions)                    
         if ( util.isActionable(state, action) ) then
+          print("random")
           break
         end                     
       end
@@ -23,6 +24,8 @@ function TicTacToeQLearningAgent(numActions, model, stone)
        for j = 1, 9 do
         action = index[-j]                    
         if ( util.isActionable(state, action) ) then
+          print("action: " .. action)
+          print(state:view(3,3))
           break
         end            
        end      

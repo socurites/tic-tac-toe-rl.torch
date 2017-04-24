@@ -6,7 +6,7 @@ require 'TicTacToeQLearningAgent'
 
 local cmd = torch.CmdLine()
 cmd:text('Training options')
-cmd:option('-epoch', 3000, 'The epoch of pre-trained model')
+cmd:option('-epoch', 9000, 'The epoch of pre-trained model')
 cmd:option('-gridSize', 3, 'The size of the grid that the agent is going to play the game on.')
 cmd:option('-numActions', 9, 'The number of actions.')
 
@@ -37,41 +37,36 @@ for i = 1, 100 do
   local currState, nextState
   local action
   
-  while (gameOver ~= true) do
-    currState = env.observe():clone()
-    --print ( currState )
-    
-    -- First        
-    action = agentO.chooseAction(currState, epsilon)
-    print('[agentO] : ' .. action)
+  while (gameOver ~= true) do        
+    io.write("choose action (1 ~ 9): ")
+    io.flush()
+    action = tonumber(io.read())
     
     -- Update Enviroiment
-    nextState, reward, gameOver = env.act(action, agentO.stone())
-    
-    print ( nextState )
-    
+    nextState, reward, gameOver = env.act(action, -1)
+        
     if ( gameOver == true ) then
       if ( reward == 1 ) then
-        print "You Lose"
+        print "You Win"
       else
         print "Draw"
       end
       break
     end
     
+    currState = env.observe():clone()
     
-    io.write("choose action (1 ~ 9): ")
-    io.flush()
-    action = tonumber(io.read())
+    action = agentX.chooseAction(currState, epsilon)
+    print('[agentX] : ' .. action)
     
     -- Update Enviroiment
-    nextState, reward, gameOver = env.act(action, 1)
+    nextState, reward, gameOver = env.act(action, agentX.stone())
     
     print ( nextState )
     
     if ( gameOver == true ) then
       if ( reward == 1 ) then
-        print "You Win"
+        print "You Lose"
       else
         print "Draw"
       end

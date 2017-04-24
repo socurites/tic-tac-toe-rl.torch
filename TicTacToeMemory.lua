@@ -8,11 +8,24 @@ function TicTacToeMemory(maxMemory, discount)
     
     -- Appends the experience to the memory.
     -- @param memoryInput table the newly expierenced state transition of an episode
-    function memory.remember(memoryInput)
-        table.insert(memory, memoryInput)
-        if (#memory > maxMemory) then
-            table.remove(memory, 1)
+    function memory.remember(memoryInput)      
+      for i=1, #memory do
+        local target = memory[i]
+        local other = memoryInput
+        
+        if ( target.action == other.action and
+             target.reward == other.reward and
+             target.gameOver == other.gameOver and
+             torch.all(torch.eq(target.inputState, other.inputState)) and
+             torch.all(torch.eq(target.nextState, other.nextState)) ) then        
+          return nil
         end
+      end
+      
+      table.insert(memory, memoryInput)
+      if (#memory > maxMemory) then
+          table.remove(memory, 1)
+      end
     end
     
     -- Get mini-batch
