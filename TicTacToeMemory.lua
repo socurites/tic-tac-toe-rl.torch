@@ -9,6 +9,7 @@ function TicTacToeMemory(maxMemory, discount)
     -- Appends the experience to the memory.
     -- @param memoryInput table the newly expierenced state transition of an episode
     function memory.remember(memoryInput)      
+      --[[
       for i=1, #memory do
         local target = memory[i]
         local other = memoryInput
@@ -21,6 +22,7 @@ function TicTacToeMemory(maxMemory, discount)
           return nil
         end
       end
+      ]]--
       
       table.insert(memory, memoryInput)
       if (#memory > maxMemory) then
