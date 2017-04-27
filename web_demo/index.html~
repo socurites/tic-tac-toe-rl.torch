@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Bootstrap 101 Template</title>
+
+    <!-- Bootstrap -->
+    <!-- Latest compiled and minified CSS -->
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+  <style>
+  .table>tbody>tr>td {
+    vertical-align: middle;
+    text-align: center;
+    font-size: 100px;
+    font-weight: bold;
+    border: 3px solid #000;
+  }
+  </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-12">
+          <h1>Tic-Tac-Toe</h1>
+        </div>
+        <div class="col-lg-6">
+          <span class="pull-right">
+            powered by <img height="50px" src="http://nebula.wsimg.com/3987b3f297943559b468670c9510334b?AccessKeyId=F1A3859F0CF18AF11563&disposition=0&alloworigin=1" />
+          </span>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-lg-6">
+          <table class="table table-bordered">
+            <tbody>
+              <tr>
+                <td id="r1c1" onclick="mark(1)" width="200px" height="200px"></td>
+                <td id="r1c2" onclick="mark(2)" width="200px" height="200px"></td>
+     	        <td id="r1c3" onclick="mark(3)" width="200px" height="200px"></td>
+              <tr>
+              <tr>
+                <td id="r2c1" onclick="mark(4)" width="200px" height="200px"></td>
+                <td id="r2c2" onclick="mark(5)" width="200px" height="200px"></td>
+                <td id="r2c3" onclick="mark(6)" width="200px" height="200px"></td>
+              <tr>
+              <tr>
+                <td id="r3c1" onclick="mark(7)" width="200px" height="200px"></td>
+                <td id="r3c2" onclick="mark(8)" width="200px" height="200px"></td>
+                <td id="r3c3" onclick="mark(9)" width="200px" height="200px"></td>
+              <tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="col-lg-6">
+          <div id="result-panel">
+          </div>
+        </div>
+      </div>
+
+  </div>
+  <script>
+  var canvas = [
+    [0, 0, 0],
+    [0, 0, 0],
+    [0, 0, 0]
+  ];
+
+  $(document).ready(function() {
+    getMove(-1);
+  });
+
+  var getMove = function(stone) {
+    $.ajax({
+        url:"/get_move?canvas=" + canvas.join(),
+        success: function(result) {
+          renderMove(result, stone);
+        }
+    });
+  };
+
+  var renderMove = function(action, stone) {
+    var coord = getCoord(action, stone);
+
+    if ( coord == false ) return;
+
+    $('#' + coord).html(stone2Mark(stone));
+
+    var win = checkWinState(canvas, stone)
+    var allMakred = isAllMarked(canvas)
+    console.debug("win: " + win);
+    console.debug("allMakred: " + allMakred);
+
+    var resultHtml = '';
+    resultHtml += '<span style="font-size: 35px;">'
+    if ( win == true ) {            
+      resultHtml += stone2Mark(stone) + " Win";
+      resultHtml += '</span>'; 
+      $('#result-panel').html(resultHtml);
+      return;
+    }
+
+    if ( allMakred == true ) {
+      resultHtml += "Draw";
+      resultHtml += '</span>';
+      $('#result-panel').html(resultHtml);
+      return;
+    }
+
+    if ( stone == 1 ) {
+      getMove(-1);
+    }
+  };
+
+  var stone2Mark = function(stone) {
+    var markHtml = '';
+    if ( stone == -1 ) {
+      markHtml += '<span style="color: black;">';
+      markHtml += 'O';      
+      markHtml += '</span>';
+    } else {
+      markHtml += '<span style="color: red;">';
+      markHtml += 'X';      
+      markHtml += '</span>';
+    }
+    return markHtml;
+  }
+
+  var getCoord = function(action, stone) {
+    action = parseInt(action);
+    if ( action <= 3 ) {
+        if ( canvas[0][action-1] != 0 ) return false;
+        canvas[0][action-1] = stone
+        return "r1c" + action
+    } else if ( action <= 6 ) {
+        if ( canvas[1][action-4] != 0 ) return false;
+        canvas[1][action-4] = stone
+        return "r2c" + (action-3)
+    } else {
+        if ( canvas[2][action-7] != 0 ) return false;
+        canvas[2][action-7] = stone
+        return "r3c" + (action-6)
+    }
+  };
+
+  var mark = function(action) {
+    renderMove(action, 1)
+  };
+
+
+  var checkWinState = function(canvas, stone) {
+    for (var i = 0; i < 3; i++ ) {
+        if ( canvas[i][0] == stone && canvas[i][1] == stone && canvas[i][2] == stone ) {
+            return true
+        }
+    }
+
+    for (var i = 0; i < 3; i++ ) {
+        if ( canvas[0][i] == stone && canvas[1][i] == stone && canvas[2][i] == stone ) {
+            return true
+        }
+    }
+
+
+    if ( canvas[0][0] == stone && canvas[1][1] == stone && canvas[2][2] == stone ) {
+        return true
+    }
+    if ( canvas[0][2] == stone && canvas[1][1] == stone && canvas[2][0] == stone ) {
+        return true
+    }
+    console.debug(canvas)
+    return false
+  };
+
+  var isAllMarked = function(canvas) {
+    for ( var i = 0; i < 3; i++ ) {
+      for ( var j = 0; j < 3; j++ ) {
+         if ( canvas[i][j] == 0 ) {
+          return false
+        }
+      }
+    }
+    return true;
+  };
+
+ 
+  </script>
+  </body>
+</html>

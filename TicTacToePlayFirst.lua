@@ -6,7 +6,8 @@ require 'TicTacToeQLearningAgent'
 
 local cmd = torch.CmdLine()
 cmd:text('Training options')
-cmd:option('-epoch', 42000, 'The epoch of pre-trained model')
+--cmd:option('-epoch', 60000, 'The epoch of pre-trained model')
+cmd:option('-epoch', 99000, 'The epoch of pre-trained model')
 cmd:option('-gridSize', 3, 'The size of the grid that the agent is going to play the game on.')
 cmd:option('-numActions', 9, 'The number of actions.')
 
