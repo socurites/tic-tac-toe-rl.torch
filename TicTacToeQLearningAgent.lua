@@ -21,8 +21,9 @@ function TicTacToeQLearningAgent(numActions, model, stone)
      else
        q = model:forward(state:view(-1))
        _, index = torch.sort(q, 1)
+       print(index)
        for j = 1, 9 do
-        action = index[-j]                    
+        action = index[-j]            
         if ( util.isActionable(state, action) ) then
           print("action: " .. action)
           print(state:view(3,3))

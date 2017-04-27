@@ -6,7 +6,7 @@ require 'TicTacToeQLearningAgent'
 
 local cmd = torch.CmdLine()
 cmd:text('Training options')
-cmd:option('-epoch', 33000, 'The epoch of pre-trained model')
+cmd:option('-epoch', 51000, 'The epoch of pre-trained model')
 cmd:option('-gridSize', 3, 'The size of the grid that the agent is going to play the game on.')
 cmd:option('-numActions', 9, 'The number of actions.')
 
@@ -21,7 +21,7 @@ math.randomseed(os.time())
 
 local util = TicTacToeUtil()
 
-local model = torch.load("tictactoc-" .. epoch .. ".t7")
+local model = torch.load("tictactoc-" .. epoch .. "-O.t7")
 
 local env = TicTacToeEnvironment(gridSize)
 

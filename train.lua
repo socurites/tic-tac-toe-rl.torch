@@ -11,7 +11,7 @@ cmd:text('Training options')
 cmd:option('-epsilon', 0.9, 'The probability of choosing a random action (in training). This decays as iterations increase. (0 to 1)')
 cmd:option('-epsilonMinimumValue', 0.001, 'The minimum value we want epsilon to reach in training. (0 to 1)')
 cmd:option('-numActions', 9, 'The number of actions.')
-cmd:option('-epoch', 200000, 'The number of games we want the system to run for.')
+cmd:option('-epoch', 500000, 'The number of games we want the system to run for.')
 cmd:option('-hiddenSize', 50, 'Number of neurons in the hidden layers.')
 cmd:option('-maxMemory', 362880, 'How large should the memory be (where it stores its past experiences).')
 cmd:option('-batchSize', 100, 'The mini-batch size for training. Samples are randomly taken from memory till mini-batch size.')
@@ -108,6 +108,12 @@ local winXCount = 0
 local drawCount = 0
 local gameResult = ''
 for i = 1, epoch do
+  --[[
+  if ( i >= 200000 ) then
+    sgdParams.learningRateDecay = 1e-10
+  end
+  --]]
+  
   -- Initialise the environment.
   env.reset()
   local errO = 0
@@ -152,7 +158,7 @@ for i = 1, epoch do
         experienceX = nil
       else
         drawCount = drawCount + 1
-        experienceX.reward = 0.5
+        experienceX.reward = 0.99
         experienceX.gameOver = true
         gameResult = 'Draw'
                 
@@ -241,6 +247,7 @@ for i = 1, epoch do
   print(nextState)
   
   if ( i > 0 and i % 3000 == 0 ) then
-    torch.save(opt.savePrefix .. i .. '.t7', modelO)
+    torch.save(opt.savePrefix .. i .. '-O' .. '.t7', modelO)
+    torch.save(opt.savePrefix .. i .. '-X' .. '.t7', modelX)
   end
 end
