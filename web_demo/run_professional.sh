@@ -1,3 +1,3 @@
 #!/bin/bash
 
-th ./app.lua -epoch 261000
+th ./app.lua -epoch 231000
