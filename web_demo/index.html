@@ -27,10 +27,13 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
   <style>
+  .table {
+    width: 364px;
+  }
   .table>tbody>tr>td {
     vertical-align: middle;
     text-align: center;
-    font-size: 100px;
+    font-size: 70px;
     font-weight: bold;
     border: 3px solid #000;
   }
@@ -39,10 +42,10 @@
   <body>
     <div class="container">
       <div class="row">
-        <div class="col-lg-12">
+        <div class="col-sm-12">
           <h1>Tic-Tac-Toe</h1>
         </div>
-        <div class="col-lg-6">
+        <div class="col-sm-6">
           <span class="pull-right">
             powered by <img height="50px" src="http://nebula.wsimg.com/3987b3f297943559b468670c9510334b?AccessKeyId=F1A3859F0CF18AF11563&disposition=0&alloworigin=1" />
           </span>
@@ -50,35 +53,54 @@
       </div>
 
       <div class="row">
-        <div class="col-lg-6">
+        <div class="col-sm-12">
           <table class="table table-bordered">
             <tbody>
               <tr>
-                <td id="r1c1" onclick="mark(1)" width="200px" height="200px"></td>
-                <td id="r1c2" onclick="mark(2)" width="200px" height="200px"></td>
-     	        <td id="r1c3" onclick="mark(3)" width="200px" height="200px"></td>
+                <td id="r1c1" onclick="mark(1)" width="120px" height="120px"></td>
+                <td id="r1c2" onclick="mark(2)" width="120px" height="120px"></td>
+     	        <td id="r1c3" onclick="mark(3)" width="120px" height="120px"></td>
               <tr>
               <tr>
-                <td id="r2c1" onclick="mark(4)" width="200px" height="200px"></td>
-                <td id="r2c2" onclick="mark(5)" width="200px" height="200px"></td>
-                <td id="r2c3" onclick="mark(6)" width="200px" height="200px"></td>
+                <td id="r2c1" onclick="mark(4)" width="120px" height="120px"></td>
+                <td id="r2c2" onclick="mark(5)" width="120px" height="120px"></td>
+                <td id="r2c3" onclick="mark(6)" width="120px" height="120px"></td>
               <tr>
               <tr>
-                <td id="r3c1" onclick="mark(7)" width="200px" height="200px"></td>
-                <td id="r3c2" onclick="mark(8)" width="200px" height="200px"></td>
-                <td id="r3c3" onclick="mark(9)" width="200px" height="200px"></td>
+                <td id="r3c1" onclick="mark(7)" width="120px" height="120px"></td>
+                <td id="r3c2" onclick="mark(8)" width="120px" height="120px"></td>
+                <td id="r3c3" onclick="mark(9)" width="120px" height="120px"></td>
               <tr>
             </tbody>
           </table>
         </div>
+      </div>
 
-        <div class="col-lg-6">
-          <div id="result-panel">
-          </div>
+      <div class="row">     
+        <div class="col-sm-12">
+          <table>
+            <tbody>
+              <tr>
+                <td width="120px">
+                   <span id="result-panel">
+                   </span>
+                </td>
+                <td width="120px">
+                <button id="btn-start" type="button" class="btn btn-primary">Start</button>
+                </td>
+                <td>
+                <button id="btn-reset" type="button" class="btn btn-default">Reset</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
   </div>
+
+
+
   <script>
   var canvas = [
     [0, 0, 0],
@@ -87,8 +109,50 @@
   ];
 
   $(document).ready(function() {
-    getMove(-1);
+    window.setInterval(function() {
+      $.ajax({
+        url:"/user_move",
+        success: function(result) {
+          if ( result != "") {
+            var action = -1;
+            var tokens = result.split(",");
+            if ( canvas[0][0] != parseInt(tokens[0]) ) {
+              action = 1;
+            } else if ( canvas[0][1] != parseInt(tokens[1]) ) {
+              action = 2;
+            } else if ( canvas[0][2] != parseInt(tokens[2]) ) {
+              action = 3;
+            } else if ( canvas[1][0] != parseInt(tokens[3]) ) {
+              action = 4;
+            } else if ( canvas[1][1] != parseInt(tokens[4]) ) {
+              action = 5;
+            } else if ( canvas[1][2] != parseInt(tokens[5]) ) {
+              action = 6;
+            } else if ( canvas[2][0] != parseInt(tokens[6]) ) {
+              action = 7;
+            } else if ( canvas[2][1] != parseInt(tokens[7]) ) {
+              action = 8;
+            } else if ( canvas[2][2] != parseInt(tokens[8]) ) {
+              action = 9;
+            }
+
+            mark(action);
+          }
+        }
+      });
+    }, 3000);
+
+
+    $('#btn-start').bind('click', function() {
+      getMove(-1);
+    });
+
+    $('#btn-reset').bind('click', function() {
+      location.reload();
+    });
+
   });
+
 
   var getMove = function(stone) {
     $.ajax({
@@ -112,7 +176,7 @@
     console.debug("allMakred: " + allMakred);
 
     var resultHtml = '';
-    resultHtml += '<span style="font-size: 35px;">'
+    resultHtml += '<span style="font-size: 30px;">'
     if ( win == true ) {            
       resultHtml += stone2Mark(stone) + " Win";
       resultHtml += '</span>'; 
