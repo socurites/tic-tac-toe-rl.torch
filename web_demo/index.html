@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Bootstrap 101 Template</title>
+    <title>Aidentify & EBS</title>
 
     <!-- Bootstrap -->
     <!-- Latest compiled and minified CSS -->
@@ -28,14 +28,19 @@
 
   <style>
   .table {
-    width: 364px;
+    width: 560px;
   }
   .table>tbody>tr>td {
     vertical-align: middle;
     text-align: center;
     font-size: 70px;
     font-weight: bold;
-    border: 1px solid #179e08;
+    border: 2px solid #e01051;
+  }
+
+  body {
+    background-color: black;
+    color: white;
   }
   </style>
   </head>
@@ -43,33 +48,43 @@
     <div class="container">
       <div class="row">
         <div class="col-sm-12">
-          <h1>Tic-Tac-Toe</h1>
-        </div>
-        <div class="col-sm-6">
-          <span class="pull-right">
-            &nbsp; <img height="50px" src="" />
-          </span>
-        </div>
+        <table>
+          <tr>
+            <td>
+              <h2>&nbsp;&nbsp;&nbsp;Prof. Im vs. T-Bot</h2>
+            </td>
+            <td style ="vertical-align: bottom;">
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+              <span>
+powered by <img id="btn-start" height="50px" src="http://nebula.wsimg.com/3987b3f297943559b468670c9510334b?AccessKeyId=F1A3859F0CF18AF11563&disposition=0&alloworigin=1" />
+            </span>
+            </td>
+          </tr>
+        </table>  
+      </div> 
       </div>
 
+      <div style="height: 9px;"></div>
+
       <div class="row">
-        <div class="col-sm-12">
-          <table class="table table-bordered" style="margin-left:200px;">
+        <div class="col-sm-10																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																																						">
+          <table class="table table-bordered" style="">
             <tbody>
               <tr>
-                <td id="r1c1" onclick="mark(1)" width="120px" height="120px"></td>
-                <td id="r1c2" onclick="mark(2)" width="120px" height="120px"></td>
-     	        <td id="r1c3" onclick="mark(3)" width="120px" height="120px"></td>
+                <td id="r1c1" onclick="mark(1)" width="145px" height="150px"></td>
+                <td id="r1c2" onclick="mark(2)" width="145px" height="150px"></td>
+     	        <td id="r1c3" onclick="mark(3)" width="145px" height="150px"></td>
               <tr>
               <tr>
-                <td id="r2c1" onclick="mark(4)" width="120px" height="120px"></td>
-                <td id="r2c2" onclick="mark(5)" width="120px" height="120px"></td>
-                <td id="r2c3" onclick="mark(6)" width="120px" height="120px"></td>
+                <td id="r2c1" onclick="mark(4)" width="145px" height="150px"></td>
+                <td id="r2c2" onclick="mark(5)" width="145px" height="150px"></td>
+                <td id="r2c3" onclick="mark(6)" width="145px" height="150px"></td>
               <tr>
               <tr>
-                <td id="r3c1" onclick="mark(7)" width="120px" height="120px"></td>
-                <td id="r3c2" onclick="mark(8)" width="120px" height="120px"></td>
-                <td id="r3c3" onclick="mark(9)" width="120px" height="120px"></td>
+                <td id="r3c1" onclick="mark(7)" width="145px" height="150px"></td>
+                <td id="r3c2" onclick="mark(8)" width="145px" height="150px"></td>
+                <td id="r3c3" onclick="mark(9)" width="145px" height="150px"></td>
               <tr>
             </tbody>
           </table>
@@ -81,16 +96,16 @@
           <table>
             <tbody>
               <tr>
-                <td width="120px">
+                <td width="145px" align="center">
                    <span id="result-panel">
                    </span>
                 </td>
-                <td width="120px">
+                <!--td width="145px">
                 <button id="btn-start" type="button" class="btn btn-primary">Start</button>
                 </td>
                 <td>
                 <button id="btn-reset" type="button" class="btn btn-default">Reset</button>
-                </td>
+                </td-->
               </tr>
             </tbody>
           </table>
@@ -140,7 +155,7 @@
           }
         }
       });
-    }, 3000);
+    }, 1500);
 
 
     $('#btn-start').bind('click', function() {
@@ -178,9 +193,9 @@
     console.debug("allMakred: " + allMakred);
 
     var resultHtml = '';
-    resultHtml += '<span style="font-size: 30px;">'
+    resultHtml += '<span style="color: white; font-size: 30px;">'
     if ( win == true ) {            
-      resultHtml += stone2Mark(stone) + " Win";
+      resultHtml += stone2MarkEx(stone) + " Win";
       resultHtml += '</span>'; 
       $('#result-panel').html(resultHtml);
       return;
@@ -198,14 +213,29 @@
     }
   };
 
-  var stone2Mark = function(stone) {
+  var stone2MarkEx = function(stone) {
     var markHtml = '';
     if ( stone == -1 ) {
-      markHtml += '<span style="color: black;">';
+      markHtml += '<span style="color: white;">';
       markHtml += 'O';      
       markHtml += '</span>';
     } else {
       markHtml += '<span style="color: white;">';
+      markHtml += 'X';      
+      markHtml += '</span>';
+    }
+    return markHtml;
+  }
+
+
+  var stone2Mark = function(stone) {
+    var markHtml = '';
+    if ( stone == -1 ) {
+      markHtml += '<span style="color: white;">';
+      markHtml += 'O';      
+      markHtml += '</span>';
+    } else {
+      markHtml += '<span style="color: black;">';
       markHtml += 'X';      
       markHtml += '</span>';
     }

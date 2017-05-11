@@ -98,6 +98,8 @@ end)
 local yolo_dir = '/tmp/ebs_tictactoe/'
 
 local lastIndex = -1
+local lastStatus = ''
+local currentStatus = ''
 
 app.get('/user_move', function(req, res)
     user_file:write("Waiting for user input ...\n")
@@ -116,21 +118,32 @@ app.get('/user_move', function(req, res)
           
           
           local canvas_str = content
-          local canvas = split(canvas_str, ",")
-          local currState = torch.Tensor(3,3)
-          currState[1][1] = canvas[1]
-          currState[1][2] = canvas[2]
-          currState[1][3] = canvas[3]
-          currState[2][1] = canvas[4]
-          currState[2][2] = canvas[5]
-          currState[2][3] = canvas[6]
-          currState[3][1] = canvas[7]
-          currState[3][2] = canvas[8]
-          currState[3][3] = canvas[9]
           
-          user_file:write("User decieded action\n")
-          toCanvas(currState, user_file)
-          user_file:write("\n")
+          currentStatus = canvas_str
+          if ( lastStatus ~= currentStatus ) then
+              user_file:write("lastStatus <> currentStatus\n")
+              lastStatus = currentStatus
+              content = ''
+          else
+            local canvas = split(canvas_str, ",")
+            local currState = torch.Tensor(3,3)
+            currState[1][1] = canvas[1]
+            currState[1][2] = canvas[2]
+            currState[1][3] = canvas[3]
+            currState[2][1] = canvas[4]
+            currState[2][2] = canvas[5]
+            currState[2][3] = canvas[6]
+            currState[3][1] = canvas[7]
+            currState[3][2] = canvas[8]
+            currState[3][3] = canvas[9]
+          
+            user_file:write("lastStatus == currentStatus\n")
+            user_file:write("User decieded action\n")
+            toCanvas(currState, user_file)
+            user_file:write("\n")
+            
+            lastStatus = currentStatus
+          end
         end
       end
     end
